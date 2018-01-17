@@ -25,7 +25,7 @@ basic_params.update({
 
 if True:
     basic_params.update({
-        'sample_rate': 24000, #originally 24000 (krbook), 22050(lj-data), 20000(others) 
+        'sample_rate': 22050, #originally 24000 (krbook), 22050(lj-data), 20000(others) 
     })
 
 basic_params.update({
