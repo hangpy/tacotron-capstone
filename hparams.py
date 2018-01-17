@@ -15,7 +15,7 @@ basic_params.update({
     # Audio
     'num_mels': 80,
     'num_freq': 1025,
-    'sample_rate': 20000, 
+    'sample_rate': 24000, # trained as 20000 but need to be 24000 
     'frame_length_ms': 50,
     'frame_shift_ms': 12.5,
     'preemphasis': 0.97,
@@ -25,7 +25,7 @@ basic_params.update({
 
 if True:
     basic_params.update({
-        'sample_rate': 22050, #originally 24000 (krbook), 22050(lj-data), 20000(others) 
+        'sample_rate': 24000, #originally 24000 (krbook), 22050(lj-data), 20000(others) 
     })
 
 basic_params.update({
@@ -68,7 +68,7 @@ basic_params.update({
     'reduction_factor': 4,
 })
 
-if False: # Deep Voice 2
+if False: # Deep Voice 2 AudioBook Dataset
     basic_params.update({
         'dropout_prob': 0.8,
 
@@ -80,7 +80,7 @@ if False: # Deep Voice 2
 
         'reduction_factor': 5, # changed from 4
     })
-elif False: # Deep Voice 2 init
+elif False: # Deep Voice 2 VCTK dataset
     basic_params.update({
         'dropout_prob': 0.8,
 
@@ -90,7 +90,7 @@ elif False: # Deep Voice 2 init
         #'post_bank_channel_size': f(512),
         'post_rnn_size': f(256),
 
-        'reduction_factor': 4,
+        'reduction_factor': 5,
     })
 elif True: # Single Speaker
     basic_params.update({
@@ -125,7 +125,7 @@ basic_params.update({
     'use_fixed_test_inputs': False,
 
     'initial_learning_rate': 0.001,
-    'decay_learning_rate_mode': 0,
+    'decay_learning_rate_mode': 0, # True in deepvoice2 paper
     'initial_data_greedy': True,
     'initial_phase_step': 8000,
     'main_data_greedy_factor': 0,
@@ -136,7 +136,7 @@ basic_params.update({
     'ignore_recognition_level': 0, # 0: use all, 1: ignore only unmatched_alignment, 2: fully ignore recognition
 
     # Eval
-    'min_tokens': 50,#originally 50, 30 is good for korean,
+    'min_tokens': 30,#originally 50, 30 is good for korean,
     'min_iters': 30,
     'max_iters': 200,
     'skip_inadequate': False,

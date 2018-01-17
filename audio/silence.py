@@ -64,9 +64,6 @@ def split_on_silence_with_librosa(
         output_path = "{}/{}.{:04d}.{}".format(
                 os.path.dirname(audio_path), filename, idx, out_ext)
 
-        #added - remove trailing, heading silence
-        segment, idx=librosa.effects.trim(segment)
-
         padded_segment = np.concatenate([
                 get_silence(pre_silence_length),
                 segment,
@@ -116,15 +113,8 @@ def split_on_silence_with_pydub(
                 os.path.dirname(audio_path), filename, idx, out_ext)
 
         segment=audio[start_idx:end_idx]
-        #added - remove trailing, heading silence
-        #segment, idx=librosa.effects.trim(segment)
         
         segment.export(target_audio_path, out_ext)  # for soundsegment
-
-        # Now apply trimming for quality issue DONT
-        #segment, sr=librosa.core.load(target_audio_path, sr=24000)
-        #seg_t, idx=librosa.effects.trim(segment)
-        #save_audio(seg_t, target_audio_path)
 
         audio_paths.append(target_audio_path)
 
