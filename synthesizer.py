@@ -14,7 +14,7 @@ from models import create_model, get_most_recent_checkpoint
 from audio import save_audio, inv_spectrogram, inv_preemphasis, \
                   inv_spectrogram_tensorflow
 from utils import plot, PARAMS_NAME, load_json, load_hparams, \
-                  add_prefix, add_postfix, get_time, parallel_run, makedirs
+                  add_prefix, add_postfix, get_time, parallel_run, makedirs, str2bool
 
 from text.korean import tokenize
 from text import text_to_sequence, sequence_to_text
@@ -76,7 +76,8 @@ class Synthesizer(object):
             manual_attention_mode=0,
             base_alignment_path=None,
             librosa_trim=False,
-            attention_trim=True):
+            attention_trim=True,
+            isKorean=True):
 
         # Possible inputs:
         # 1) text=text
@@ -113,7 +114,8 @@ class Synthesizer(object):
                     use_manual_attention=use_manual_attention,
                     librosa_trim=librosa_trim,
                     attention_trim=attention_trim,
-                    time_str=time_str)
+                    time_str=time_str,
+                    isKorean=isKorean)
             return parallel_run(fn, items,
                     desc="plot_graph_and_save_audio", parallel=False)
 
@@ -214,7 +216,7 @@ def plot_graph_and_save_audio(args,
         use_short_concat=False,
         use_manual_attention=False, save_alignment=False,
         librosa_trim=False, attention_trim=False,
-        time_str=None):
+        time_str=None, isKorean=True):
 
     idx, (wav, alignment, path, text, sequence) = args
 
@@ -230,7 +232,7 @@ def plot_graph_and_save_audio(args,
         plot_path = add_postfix(plot_path, "manual")
 
     if plot_path:
-        plot.plot_alignment(alignment, plot_path, text=text)
+        plot.plot_alignment(alignment, plot_path, text=text, isKorean=isKorean)
 
     if use_short_concat:
         wav = short_concat(
@@ -375,6 +377,7 @@ if __name__ == "__main__":
     parser.add_argument('--num_speakers', default=1, type=int)
     parser.add_argument('--speaker_id', default=0, type=int)
     parser.add_argument('--checkpoint_step', default=None, type=int)
+    parser.add_argument('--is_korean', default=True, type=str2bool)
     config = parser.parse_args()
 
     makedirs(config.sample_path)
@@ -386,4 +389,5 @@ if __name__ == "__main__":
             texts=[config.text],
             base_path=config.sample_path,
             speaker_ids=[config.speaker_id],
-            attention_trim=False)[0]
+            attention_trim=False,
+            isKorean=config.is_korean)[0]
