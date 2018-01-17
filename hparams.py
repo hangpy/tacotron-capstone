@@ -136,7 +136,7 @@ basic_params.update({
     'ignore_recognition_level': 0, # 0: use all, 1: ignore only unmatched_alignment, 2: fully ignore recognition
 
     # Eval
-    'min_tokens': 30,#originally 50, 30 is good for korean,
+    'min_tokens': 50,#originally 50, 30 is good for korean,
     'min_iters': 30,
     'max_iters': 200,
     'skip_inadequate': False,
