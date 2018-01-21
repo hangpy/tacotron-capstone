@@ -9,7 +9,6 @@ from functools import partial
 from utils import parallel_run, remove_file, backup_file, write_json
 from audio import load_audio, save_audio, resample_audio, get_duration
 
-
 def text_recognition(path, config):
     root, ext = os.path.splitext(path)
     txt_path = root + ".txt"
@@ -27,11 +26,12 @@ def text_recognition(path, config):
     error_count = 0
 
     tmp_path = os.path.splitext(path)[0] + ".tmp.wav"
+    client = speech.SpeechClient() # Fixed
 
     while True:
         try:
-            client = speech.SpeechClient()
-
+            # client= speech.SpeechClient() # Causes 10060 max retries exceeded -to OAuth -HK
+            
             content = load_audio(
                     path, pre_silence_length=config.pre_silence_length,
                     post_silence_length=config.post_silence_length)

@@ -4,24 +4,40 @@ import numpy as np
 
 from text import cleaners
 from hparams import hparams
-from text.symbols import symbols, PAD, EOS
+from text.symbols import symbols, en_symbols, PAD, EOS
 from text.korean import jamo_to_korean
+
 
 
 # Mappings from symbol to numeric ID and vice versa:
 _symbol_to_id = {s: i for i, s in enumerate(symbols)}
 _id_to_symbol = {i: s for i, s in enumerate(symbols)}
+isEn=False
+
 
 # Regular expression matching text enclosed in curly braces:
 _curly_re = re.compile(r'(.*?)\{(.+?)\}(.*)')
 
 puncuation_table = str.maketrans({key: None for key in string.punctuation})
 
+def convert_to_en_symbols():
+    '''Converts built-in korean symbols to english, to be used for english training
+    
+'''
+    global _symbol_to_id, _id_to_symbol, isEn
+    if not isEn:
+        print(" [!] Converting to english mode")
+    _symbol_to_id = {s: i for i, s in enumerate(en_symbols)}
+    _id_to_symbol = {i: s for i, s in enumerate(en_symbols)}
+    isEn=True
+
 def remove_puncuations(text):
     return text.translate(puncuation_table)
 
-def text_to_sequence(text, as_token=False):
+def text_to_sequence(text, as_token=False):    
     cleaner_names = [x.strip() for x in hparams.cleaners.split(',')]
+    if ('english_cleaners' in cleaner_names) and isEn==False:
+        convert_to_en_symbols()
     return _text_to_sequence(text, cleaner_names, as_token)
 
 def _text_to_sequence(text, cleaner_names, as_token):
@@ -60,6 +76,10 @@ def _text_to_sequence(text, cleaner_names, as_token):
 
 def sequence_to_text(sequence, skip_eos_and_pad=False, combine_jamo=False):
     '''Converts a sequence of IDs back to a string'''
+    cleaner_names=[x.strip() for x in hparams.cleaners.split(',')]
+    if 'english_cleaners' in cleaner_names and isEn==False:
+        convert_to_en_symbols()
+        
     result = ''
     for symbol_id in sequence:
         if symbol_id in _id_to_symbol:
@@ -77,6 +97,7 @@ def sequence_to_text(sequence, skip_eos_and_pad=False, combine_jamo=False):
         return jamo_to_korean(result)
     else:
         return result
+
 
 
 def _clean_text(text, cleaner_names):

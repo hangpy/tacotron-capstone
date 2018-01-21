@@ -93,6 +93,18 @@ Follow below commands. (explain with `son` dataset)
 
 Because the automatic generation is extremely naive, the dataset is noisy. However, if you have enough datasets (20+ hours with random initialization or 5+ hours with pretrained model initialization), you can expect an acceptable quality of audio synthesis.
 
+### 2-3. Generate English datasets
+
+1. Download speech dataset at https://keithito.com/LJ-Speech-Dataset/
+
+2. Convert metadata CSV file to json file. (arguments are available for changing preferences)
+		
+		python3 -m datasets.LJSpeech_1_0.prepare
+
+3. Finally, generate numpy files which will be used in training.
+		
+		python3 -m datasets.generate_data ./datasets/LJSpeech_1_0
+		
 
 ### 3. Train a model
 
@@ -126,7 +138,13 @@ You can train your own models with:
 or generate audio directly with:
 
     python3 synthesizer.py --load_path logs/son-20171015 --text "이거 실화냐?"
+	
+### 4-1. Synthesizing non-korean(english) audio
 
+For generating non-korean audio, you must set the argument --is_korean False.
+		
+	python3 app.py --load_path logs/LJSpeech_1_0-20180108 --num_speakers=1 --is_korean=False
+	python3 synthesizer.py --load_path logs/LJSpeech_1_0-20180108 --text="Winter is coming." --is_korean=False
 
 ## Results
 

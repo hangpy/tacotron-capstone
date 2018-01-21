@@ -89,10 +89,18 @@ def save_and_plot_fn(args, log_dir, step, loss, prefix):
     save_audio(waveform, audio_path)
 
     info_text = 'step={:d}, loss={:.5f}'.format(step, loss)
-    plot.plot_alignment(
-            align, align_path, info=info_text,
-            text=sequence_to_text(seq,
-                    skip_eos_and_pad=True, combine_jamo=True))
+    if 'korean_cleaners' in [x.strip() for x in hparams.cleaners.split(',')]:
+        log('Training korean : Use jamo')
+        plot.plot_alignment(
+                align, align_path, info=info_text,
+                text=sequence_to_text(seq,
+                        skip_eos_and_pad=True, combine_jamo=True), isKorean=True)
+    else:
+        log('Training non-korean : X use jamo')
+        plot.plot_alignment(
+                align, align_path, info=info_text,
+                text=sequence_to_text(seq,
+                        skip_eos_and_pad=True, combine_jamo=False), isKorean=False) 
 
 def save_and_plot(sequences, spectrograms,
         alignments, log_dir, step, loss, prefix):
@@ -121,7 +129,7 @@ def train(log_dir, config):
 
     log(' [*] git recv-parse HEAD:\n%s' % get_git_revision_hash())
     log('='*50)
-    log(' [*] dit diff:\n%s' % get_git_diff())
+    #log(' [*] dit diff:\n%s' % get_git_diff())
     log('='*50)
     log(' [*] Checkpoint path: %s' % checkpoint_path)
     log(' [*] Loading training data from: %s' % data_dirs)
@@ -172,7 +180,7 @@ def train(log_dir, config):
     step = 0
     time_window = ValueWindow(100)
     loss_window = ValueWindow(100)
-    saver = tf.train.Saver(max_to_keep=5, keep_checkpoint_every_n_hours=2)
+    saver = tf.train.Saver(max_to_keep=None, keep_checkpoint_every_n_hours=2)
 
     sess_config = tf.ConfigProto(
             log_device_placement=False,
@@ -306,10 +314,16 @@ def main():
     infolog.init(log_path, config.model_dir, config.slack_url)
 
     tf.set_random_seed(config.random_seed)
+    print(config.data_paths)
 
     if any("krbook" not in data_path for data_path in config.data_paths) and \
             hparams.sample_rate != 20000:
-        warning("Detect non-krbook dataset. Set sampling rate from {} to 20000".\
+        warning("Detect non-krbook dataset. May need to set sampling rate from {} to 20000".\
+                format(hparams.sample_rate))
+        
+    if any('LJ' in data_path for data_path in config.data_paths) and \
+           hparams.sample_rate != 22050:
+        warning("Detect LJ Speech dataset. Set sampling rate from {} to 22050".\
                 format(hparams.sample_rate))
 
     if config.load_path is not None and config.initialize_path is not None:

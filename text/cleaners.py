@@ -14,6 +14,9 @@ hyperparameter. Some cleaners are English-specific. You'll typically want to use
 import re
 from .korean import tokenize as ko_tokenize
 
+# Added to support LJ_speech
+from unidecode import unidecode
+from .en_numbers import normalize_numbers as en_normalize_numbers
 
 # Regular expression matching whitespace:
 _whitespace_re = re.compile(r'\s+')
@@ -55,7 +58,7 @@ def expand_abbreviations(text):
 
 
 def expand_numbers(text):
-    return normalize_numbers(text)
+    return en_normalize_numbers(text)
 
 
 def lowercase(text):
@@ -65,6 +68,10 @@ def lowercase(text):
 def collapse_whitespace(text):
     return re.sub(_whitespace_re, ' ', text)
 
+def convert_to_ascii(text):
+    '''Converts to ascii, existed in keithito but deleted in carpedm20'''
+    return unidecode(text)
+    
 
 def basic_cleaners(text):
     '''Basic pipeline that lowercases and collapses whitespace without transliteration.'''
@@ -82,10 +89,12 @@ def transliteration_cleaners(text):
 
 
 def english_cleaners(text):
-  '''Pipeline for English text, including number and abbreviation expansion.'''
-  text = convert_to_ascii(text)
-  text = lowercase(text)
-  text = expand_numbers(text)
-  text = expand_abbreviations(text)
-  text = collapse_whitespace(text)
-  return text
+    '''Pipeline for English text, including number and abbreviation expansion.'''
+    text = convert_to_ascii(text)
+    text = lowercase(text)
+    text = expand_numbers(text)
+    text = expand_abbreviations(text)
+    text = collapse_whitespace(text)
+    return text
+
+

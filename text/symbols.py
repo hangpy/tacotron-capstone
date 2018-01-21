@@ -9,5 +9,8 @@ from jamo.jamo import _jamo_char_to_hcj
 
 from .korean import ALL_SYMBOLS, PAD, EOS
 
-#symbols = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!\'(),-.:;? '
-symbols = ALL_SYMBOLS
+# For english
+en_symbols = PAD+EOS+'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!\'(),-.:;? '  #<-For deployment(Because korean ALL_SYMBOLS follow this convention)
+
+symbols = ALL_SYMBOLS # for korean
+

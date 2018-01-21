@@ -70,6 +70,8 @@ def split_on_silence_with_librosa(
                 get_silence(post_silence_length),
         ])
 
+
+        
         save_audio(padded_segment, output_path)
         audio_paths.append(output_path)
 
@@ -101,7 +103,7 @@ def split_on_silence_with_pydub(
             edges[-1][1] = not_silence_ranges[idx][1]
         else:
             edges.append(not_silence_ranges[idx])
-
+    
     audio_paths = []
     for idx, (start_idx, end_idx) in enumerate(edges[skip_idx:]):
         start_idx = max(0, start_idx - keep_silence)
@@ -110,7 +112,9 @@ def split_on_silence_with_pydub(
         target_audio_path = "{}/{}.{:04d}.{}".format(
                 os.path.dirname(audio_path), filename, idx, out_ext)
 
-        audio[start_idx:end_idx].export(target_audio_path, out_ext)
+        segment=audio[start_idx:end_idx]
+        
+        segment.export(target_audio_path, out_ext)  # for soundsegment
 
         audio_paths.append(target_audio_path)
 

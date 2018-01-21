@@ -81,11 +81,11 @@ def get_time():
     return datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
 
 def write_json(path, data):
-    with open(path, 'w') as f:
+    with open(path, 'w',encoding='utf-8') as f:
         json.dump(data, f, indent=4, sort_keys=True, ensure_ascii=False)
 
-def load_json(path, as_class=False):
-    with open(path) as f:
+def load_json(path, as_class=False, encoding='euc-kr'):
+    with open(path,encoding=encoding) as f:
         content = f.read()
         content = re.sub(",\s*}", "}", content)
         content = re.sub(",\s*]", "]", content)
@@ -95,6 +95,7 @@ def load_json(path, as_class=False):
                     lambda data: namedtuple('Data', data.keys())(*data.values()))
         else:
             data = json.loads(content)
+    #print(data)
     return data
 
 def save_hparams(model_dir, hparams):
