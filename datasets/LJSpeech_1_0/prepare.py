@@ -3,7 +3,7 @@
 Created on Thu Jan  4 10:50:07 2018
 # Conversion tool for https://github.com/carpedm20/multi-speaker-tacotron-tensorflow
 This prepares LJ-Dataset (available at https://keithito.com/LJ-Speech-Dataset/) to json and wav format
-that can be processed into .npz file using datasets.generate_data. 
+that can be processed into .npz file using datasets.generate_data.
 
 @author: engiecat (github)
 """
@@ -38,7 +38,8 @@ def convert_name_to_path(name, audio_dir, audio_format):
     abs_audio_dir=os.path.abspath(os.path.join(base_dir,audio_dir))
     # the audio directory is respective to dataset folder(base_dir)
     # while the working directory is at the root directory (work_dir)
-    result= os.path.join('./',os.path.relpath(abs_audio_dir,work_dir), name+'.'+audio_format )
+    # result= os.path.join('./',os.path.relpath(abs_audio_dir,work_dir), name+'.'+audio_format )
+    result = os.path.join('.', 'wavs', name + '.' + audio_format)
     return result
 
 def convert_to_json_format(data, is_normalized):
@@ -58,13 +59,13 @@ if __name__ == '__main__':
     parser.add_argument('--alignment_filename', default="alignment.json")
     parser.add_argument('--use_normalize', default=True, type=str2bool)
     config = parser.parse_args()
-    
+
     print(' [*] Reading metadata file - '+config.metadata)
     data = read_csv(os.path.join(base_dir, config.metadata))
     print(' [*] Converting to audio_path...')
     results={}
     for d in data:
-        d.audio_path=convert_name_to_path(d.audio_name,config.audio_dir,config.audio_format) 
+        d.audio_path=convert_name_to_path(d.audio_name,config.audio_dir,config.audio_format)
         results.update(convert_to_json_format(d, config.use_normalize))
     print(' [*] Saving to json...')
     alignment_path = \
@@ -74,4 +75,3 @@ if __name__ == '__main__':
     write_json(alignment_path, results)
     print(' [!] All Done!')
     print(work_dir)
-    

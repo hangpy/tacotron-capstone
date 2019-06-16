@@ -68,7 +68,7 @@ def add_stats(model, model2=None, scope_name='train'):
             summaries.extend([
                     tf.summary.scalar('loss_mel',
                             model.mel_loss - model2.mel_loss),
-                    tf.summary.scalar('loss_linear', 
+                    tf.summary.scalar('loss_linear',
                             model.linear_loss - model2.linear_loss),
                     tf.summary.scalar('loss',
                             model.loss_without_coeff - model2.loss_without_coeff),
@@ -100,7 +100,7 @@ def save_and_plot_fn(args, log_dir, step, loss, prefix):
         plot.plot_alignment(
                 align, align_path, info=info_text,
                 text=sequence_to_text(seq,
-                        skip_eos_and_pad=True, combine_jamo=False), isKorean=False) 
+                        skip_eos_and_pad=True, combine_jamo=False), isKorean=False)
 
 def save_and_plot(sequences, spectrograms,
         alignments, log_dir, step, loss, prefix):
@@ -149,7 +149,9 @@ def train(log_dir, config):
     # Set up model:
     is_randomly_initialized = config.initialize_path is None
     global_step = tf.Variable(0, name='global_step', trainable=False)
+    # 학습횟수 카운팅을 위해. trainable=False는 학습에 관여하지 않음을 명시
 
+    # 타코트론 모델 생성
     with tf.variable_scope('model') as scope:
         model = create_model(hparams)
         model.initialize(
@@ -194,6 +196,7 @@ def train(log_dir, config):
             summary_writer = tf.summary.FileWriter(log_dir, sess.graph)
             sess.run(tf.global_variables_initializer())
 
+            # argument로 기존 체크포인트가 주어지는지 아닌지 부터 확인
             if config.load_path:
                 # Restore from a checkpoint if the user requested it.
                 restore_path = get_most_recent_checkpoint(config.model_dir)
@@ -320,7 +323,7 @@ def main():
             hparams.sample_rate != 20000:
         warning("Detect non-krbook dataset. May need to set sampling rate from {} to 20000".\
                 format(hparams.sample_rate))
-        
+
     if any('LJ' in data_path for data_path in config.data_paths) and \
            hparams.sample_rate != 22050:
         warning("Detect LJ Speech dataset. Set sampling rate from {} to 22050".\

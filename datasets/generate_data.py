@@ -37,7 +37,8 @@ def build_from_path(config):
 
     loss_coeff = defaultdict(one)
     if config.metadata_path.endswith("json"):
-        with open(config.metadata_path) as f:
+        # must use utf-8 encoding
+        with open(config.metadata_path, encoding='UTF8') as f:
             content = f.read()
         info = json.loads(content)
     elif config.metadata_path.endswith("csv"):
@@ -183,7 +184,7 @@ def _process_utterance(audio_path, data_dir, tokens, loss_coeff):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='spectrogram')
 
-    parser.add_argument('metadata_path', type=str)
+    parser.add_argument('--metadata_path', type=str)
     parser.add_argument('--data_dirname', type=str, default="data")
     parser.add_argument('--num_workers', type=int, default=None)
 

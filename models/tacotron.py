@@ -23,9 +23,11 @@ class Tacotron():
             mel_targets=None, linear_targets=None, loss_coeff=None,
             rnn_decoder_test_mode=False, is_randomly_initialized=False,
         ):
+
         is_training = linear_targets is not None
         self.is_randomly_initialized = is_randomly_initialized
 
+        # get_variable() 사용 시, 'inference' scope 안에 있는 변수 가져옴
         with tf.variable_scope('inference') as scope:
             hp = self._hparams
             batch_size = tf.shape(inputs)[0]

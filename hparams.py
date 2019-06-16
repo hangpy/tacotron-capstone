@@ -15,7 +15,7 @@ basic_params.update({
     # Audio
     'num_mels': 80,
     'num_freq': 1025,
-    'sample_rate': 24000, # trained as 20000 but need to be 24000 
+    'sample_rate': 24000, # trained as 20000 but need to be 24000
     'frame_length_ms': 50,
     'frame_shift_ms': 12.5,
     'preemphasis': 0.97,
@@ -25,7 +25,7 @@ basic_params.update({
 
 if True:
     basic_params.update({
-        'sample_rate': 22050, #originally 24000 (krbook), 22050(lj-data), 20000(others) 
+        'sample_rate': 22050, #originally 24000 (krbook), 22050(lj-data), 20000(others)
     })
 
 basic_params.update({

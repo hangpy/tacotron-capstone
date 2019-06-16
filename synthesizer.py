@@ -143,6 +143,7 @@ class Synthesizer(object):
                     os.path.basename(base_path))
 
             for idx in range(len(sequences)):
+                # we should focus this part for dealing with attention module's output
                 numpy_path = "{}.{}.npy".format(alignment_path, idx)
                 manual_alignments.append(np.load(numpy_path))
 
@@ -214,7 +215,7 @@ def plot_graph_and_save_audio(args,
         pre_word_num=0, post_word_num=0,
         pre_surplus_idx=0, post_surplus_idx=1,
         use_short_concat=False,
-        use_manual_attention=False, save_alignment=False,
+        use_manual_attention=False, save_alignment=True,
         librosa_trim=False, attention_trim=False,
         time_str=None, isKorean=True):
 
