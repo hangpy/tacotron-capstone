@@ -139,12 +139,16 @@ class Synthesizer(object):
         else:
             manual_alignments = []
             alignment_path = os.path.join(
+                    # position the sample dir is stored
                     base_alignment_path,
+
+                    # "samples" -> dirname which involves samples
                     os.path.basename(base_path))
 
             for idx in range(len(sequences)):
                 # we should focus this part for dealing with attention module's output
-                numpy_path = "{}.{}.npy".format(alignment_path, idx)
+                # numpy_path = "{}.{}.npy".format(alignment_path, idx)
+                numpy_path = os.path.join(alignment_path, "{}.npy".format(idx))
                 manual_alignments.append(np.load(numpy_path))
 
             alignments_T = np.transpose(manual_alignments, [0, 2, 1])
@@ -373,22 +377,33 @@ def short_concat(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--load_path', required=True)
-    parser.add_argument('--sample_path', default="samples")
+    parser.add_argument('--sample_dir_name', default="samples")
     parser.add_argument('--text', required=True)
     parser.add_argument('--num_speakers', default=1, type=int)
     parser.add_argument('--speaker_id', default=0, type=int)
     parser.add_argument('--checkpoint_step', default=None, type=int)
     parser.add_argument('--is_korean', default=True, type=str2bool)
+
+    # Added parts
+    # add for manipulating attention module result
+    parser.add_argument('--manual_attention_mode', default=0, type=int, choices=[0, 1])
+    parser.add_argument('--get_base_alignment_path', default=None, type=int, choices=[1])
+
     config = parser.parse_args()
 
-    makedirs(config.sample_path)
+    makedirs(config.sample_dir_name)
 
     synthesizer = Synthesizer()
     synthesizer.load(config.load_path, config.num_speakers, config.checkpoint_step)
+    if(config.get_base_alignment_path):
+        base_alignment_path = os.path.abspath('')
 
     audio = synthesizer.synthesize(
             texts=[config.text],
-            base_path=config.sample_path,
+            base_path=config.sample_dir_name,
             speaker_ids=[config.speaker_id],
             attention_trim=False,
-            isKorean=config.is_korean)[0]
+            isKorean=config.is_korean,
+            # Added parts
+            manual_attention_mode=config.manual_attention_mode,
+            base_alignment_path=base_alignment_path)[0]
