@@ -1,4 +1,5 @@
 import os
+import re
 import time
 import math
 import argparse
@@ -207,7 +208,12 @@ def train(log_dir, config):
                 saver.restore(sess, restore_path)
                 log('Initialized from checkpoint: %s at commit: %s' % (restore_path, commit), slack=True)
 
-                zero_step_assign = tf.assign(global_step, 0)
+                # Added code for recognizing whole global steps by soundbrew
+                p = re.compile("model.ckpt-(\d+)")
+                m = p.search(restore_path)
+                prev_global_step = m.group(1)
+
+                zero_step_assign = tf.assign(global_step, int(prev_global_step))
                 sess.run(zero_step_assign)
 
                 start_step = sess.run(global_step)
