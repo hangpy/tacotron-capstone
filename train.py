@@ -209,10 +209,22 @@ def train(log_dir, config):
                 log('Initialized from checkpoint: %s at commit: %s' % (restore_path, commit), slack=True)
 
                 # Added code for recognizing whole global steps by soundbrew
-                p = re.compile("model.ckpt-(\d+)")
-                m = p.search(restore_path)
-                prev_global_step = m.group(1)
+                reg_step = re.compile("model.ckpt-(\d+)")
+                # reg_initial_target = re.compile("logs/(\w+)_")
+                # reg_new_target = re.compile("datasets/(\w+)")
 
+                m1 = reg_step.search(restore_path)
+                # m2 = reg_initial_target.search(restore_path)
+                # m3 = reg_new_target.search(config.data_paths)
+
+                prev_global_step = m1.group(1)
+                # prev_target = m2.group(1)
+                # new_target = m3.group(1)
+
+                #if new_target == prev_target:
+                #    zero_step_assign = tf.assign(global_step, int(prev_global_step))
+                #else:
+                # zero_step_assign = tf.assign(global_step, 0)
                 zero_step_assign = tf.assign(global_step, int(prev_global_step))
                 sess.run(zero_step_assign)
 

@@ -395,8 +395,12 @@ if __name__ == "__main__":
 
     synthesizer = Synthesizer()
     synthesizer.load(config.load_path, config.num_speakers, config.checkpoint_step)
-    if(config.get_base_alignment_path):
+
+
+    if config.get_base_alignment_path is not None:
         base_alignment_path = os.path.abspath('')
+    else:
+        base_alignment_path = config.get_base_alignment_path
 
     audio = synthesizer.synthesize(
             texts=[config.text],
