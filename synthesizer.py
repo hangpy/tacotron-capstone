@@ -276,6 +276,10 @@ def plot_graph_and_save_audio(args,
         audio_out = audio_out[:index[-1]]
 
     if save_alignment:
+        '''
+        the part for saving manual attention npy file. we should use this for
+        manipulate attention of other single speaker later
+        '''
         alignment_path = "{}/{}.npy".format(base_path, idx)
         np.save(alignment_path, alignment, allow_pickle=False)
 
@@ -386,8 +390,8 @@ if __name__ == "__main__":
 
     # Added parts
     # add for manipulating attention module result
-    parser.add_argument('--manual_attention_mode', default=0, type=int, choices=[0, 1])
-    parser.add_argument('--get_base_alignment_path', default=None, type=int, choices=[1])
+    parser.add_argument('--manual_attention_mode', default=0, type=int, choices=[0, 1, 2, 3])
+    # parser.add_argument('--get_base_alignment_path', default=None, type=int, choices=[1])
 
     config = parser.parse_args()
 
@@ -397,10 +401,15 @@ if __name__ == "__main__":
     synthesizer.load(config.load_path, config.num_speakers, config.checkpoint_step)
 
 
-    if config.get_base_alignment_path is not None:
+    # if config.get_base_alignment_path is not None:
+    #     base_alignment_path = os.path.abspath('')
+    # else:
+    #     base_alignment_path = config.get_base_alignment_path
+
+    if config.manual_attention_mode > 0:
         base_alignment_path = os.path.abspath('')
     else:
-        base_alignment_path = config.get_base_alignment_path
+        base_alignment_path = None
 
     audio = synthesizer.synthesize(
             texts=[config.text],
@@ -408,6 +417,9 @@ if __name__ == "__main__":
             speaker_ids=[config.speaker_id],
             attention_trim=False,
             isKorean=config.is_korean,
+
             # Added parts
             manual_attention_mode=config.manual_attention_mode,
+            # position the sample dir is stored
             base_alignment_path=base_alignment_path)[0]
+

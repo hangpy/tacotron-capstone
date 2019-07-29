@@ -1,173 +1,229 @@
-# Multi-Speaker Tacotron in TensorFlow
+# Single-Speaker Tacotron in TensorFlow
 
-TensorFlow implementation of:
+The cloned project actually include multi-speaker model with deep-voice of Baidu. However, for the time being, we decided to use only Single-Speaker model because it is enough to proceed project.
 
-- [Deep Voice 2: Multi-Speaker Neural Text-to-Speech](https://arxiv.org/abs/1705.08947)
-- [Listening while Speaking: Speech Chain by Deep Learning](https://arxiv.org/abs/1707.04879)
-- [Tacotron: Towards End-to-End Speech Synthesis](https://arxiv.org/abs/1703.10135)
+<br>
 
-Samples audios (in Korean) can be found [here](http://carpedm20.github.io/tacotron/en.html).
+<br>
 
-![model](./assets/model.png)
+<br>
 
+## 1. Construct virtual environment
 
-## Prerequisites
+You must activate venv environment for running python library with tensorflow and so on.
 
-- Python 3.6+
-- FFmpeg
-- [Tensorflow 1.3](https://www.tensorflow.org/install/)
+With supposing you installed venv on project's root directory with naming 'venv', you can use below command script on bash shell
 
+```
+#window
+source venv/Script/activate
 
-## Usage
+#mac
+source venv/bin/activate
+```
 
-### 1. Install prerequisites
+<br>
 
-After preparing [Tensorflow](https://www.tensorflow.org/install/), install prerequisites with:
+<br>
 
-    pip3 install -r requirements.txt
-    python -c "import nltk; nltk.download('punkt')"
+<br>
 
-If you want to synthesize a speech in Korean dicrectly, follow [2-3. Download pre-trained models](#2-3-download-pre-trained-models).
+## 2. Checking mode (en, kor)
 
+In hparams.py, search 'kor' and follow the above comments. Just select one.
 
-### 2-1. Generate custom datasets
+```python
+basic_params = {
+    # 'cleaners': 'korean_cleaners',
+    'cleaners': 'english_cleaners', #can be substitued
+}
+
+basic_params.update({
+    # Eval
+    'min_tokens': 50, #originally 50, this is for english
+    # 'min_tokens': 30, # this is for korean
+})
+```
+
+<br>
+
+<br>
+
+<br>
+
+## 3. Preprocessing and Training
 
 The `datasets` directory should look like:
 
-    datasets
-    ├── son
-    │   ├── alignment.json
-    │   └── audio
-    │       ├── 1.mp3
-    │       ├── 2.mp3
-    │       ├── 3.mp3
-    │       └── ...
-    └── YOUR_DATASET
-        ├── alignment.json
-        └── audio
-            ├── 1.mp3
-            ├── 2.mp3
-            ├── 3.mp3
-            └── ...
+```
+datasets
+├── kss
+│   ├── data (training data is here)
+│   ├── alignment.json
+|   ├── metadata.csv (it can be any form)
+|   ├── prepare.py (customized based on downloaded dataset's structure)
+│   ├── wavs
+│   │   ├── -----------------
+│   │   ├── 1
+│   │   ├── 2
+│   │   ├── ... own structure
+│   │   └── -----------------
+│   └── transcript.v.1.2.txt
+│
+├── WEB
+│   ├── data (training data is here)
+│   ├── alignment.json
+|   ├── metadata.csv (it can be any form)
+|   ├── prepare.py (customized based on downloaded dataset's structure)
+│   ├── wavs
+│   │   ├── -----------------
+│   │   ├── Act
+│   │   ├── Amos
+│   │   ├── ... own structure
+│   │   └── -----------------
+│   └── transcript.txt
+│
+├── benedict
+│    ├── ...
+│    └── ...
+│
+├── LJSpeech_1_0
+│    ├── ...
+│    └── ...
+│ 
+├── __init__.py
+├── datafeeder.py
+└── generate_data.py
+```
 
 and `YOUR_DATASET/alignment.json` should look like:
 
-    {
-        "./datasets/YOUR_DATASET/audio/001.mp3": "My name is Taehoon Kim.",
-        "./datasets/YOUR_DATASET/audio/002.mp3": "The buses aren't the problem.",
-        "./datasets/YOUR_DATASET/audio/003.mp3": "They have discovered a new particle.",
-    }
+### Benedict
 
-After you prepare as described, you should genearte preprocessed data with:
+(Soon) Need more data
 
-    python3 -m datasets.generate_data ./datasets/YOUR_DATASET/alignment.json
+<br>
 
+### LJSpeech-1.1
 
-### 2-2. Generate Korean datasets
+(Soon)
 
-Follow below commands. (explain with `son` dataset)
+<br>
 
-0. To automate an alignment between sounds and texts, prepare `GOOGLE_APPLICATION_CREDENTIALS` to use [Google Speech Recognition API](https://cloud.google.com/speech/). To get credentials, read [this](https://developers.google.com/identity/protocols/application-default-credentials).
+### World English Bible (WEB)
 
-       export GOOGLE_APPLICATION_CREDENTIALS="YOUR-GOOGLE.CREDENTIALS.json"
+[Dataset Download Link](https://www.kaggle.com/bryanpark/the-world-english-bible-speech-dataset)
 
-1. Download speech(or video) and text.
+The basically provided transcript has been minimally processed. So I had to manipulate original transcript's structure to can be trained by tacotron. First of all, provided transcript's quality is very good. so It was just all to change that transcript's form to normalized from and made it as alignment.josn which can be used to train with labeling.
 
-       python3 -m datasets.son.download
+So I changed a little bit, which audio file path and speech text will be split based on '\\t', and after removing not required symbol, normalized text with english_cleaner() in text utils.
 
-2. Segment all audios on silence.
+1. moving directories(Act ~ ) including audio files to inside new directory in './dataset/WEB/wavs'
 
-       python3 -m audio.silence --audio_pattern "./datasets/son/audio/*.wav" --method=pydub
+2. Make alignment.json file for generating training datasets. (This is a kind of metadata)
 
-3. By using [Google Speech Recognition API](https://cloud.google.com/speech/), we predict sentences for all segmented audios.
+```
+python -m dataset.WEB.prepare --metadata transcript.txt
+```
 
-       python3 -m recognition.google --audio_pattern "./datasets/son/audio/*.*.wav"
+*must be located in project's root directory*
 
-4. By comparing original text and recognised text, save `audio<->text` pair information into `./datasets/son/alignment.json`.
+3. Generate training dataset
 
-       python3 -m recognition.alignment --recognition_path "./datasets/son/recognition.json" --score_threshold=0.5
+```
+python -m datasets.generate_data --metadata_path ./datasets/WEB/alignment.json
+```
 
-5. Finally, generated numpy files which will be used in training.
+After finishing process, you can check new path on your project;s root directory './datasets/WEB/data' with many npz files.
 
-       python3 -m datasets.generate_data ./datasets/son/alignment.json
+4. Training
 
-Because the automatic generation is extremely naive, the dataset is noisy. However, if you have enough datasets (20+ hours with random initialization or 5+ hours with pretrained model initialization), you can expect an acceptable quality of audio synthesis.
+```
+python train.py --data_path=datasets/WEB
+```
 
-### 2-3. Generate English datasets
+<br>
 
-1. Download speech dataset at https://keithito.com/LJ-Speech-Dataset/
+### Korean Single Speaker (kss)
 
-2. Convert metadata CSV file to json file. (arguments are available for changing preferences)
-		
-		python3 -m datasets.LJSpeech_1_0.prepare
+[Dataset Download Link](https://www.kaggle.com/bryanpark/korean-single-speaker-speech-dataset)
 
-3. Finally, generate numpy files which will be used in training.
-		
-		python3 -m datasets.generate_data ./datasets/LJSpeech_1_0
-		
+We trained not only english version, but also korean version to the tacotron model. Our cloned project also support training with korean speech with changing some parts a little bit. Although this dataset's each transcript is short to some extent, but sound is very clearly and has no noise at all. Very good. 
 
-### 3. Train a model
+1. moving directories(1 ~ 4 ) including audio files to inside new directory in './dataset/kss/wavs'
+2. Make alignment.json file (metadata)
 
-The important hyperparameters for a models are defined in `hparams.py`.
+```
+python -m dataset.kss.prepare --metadata transcript.v.1.2.txt
+```
 
-(**Change `cleaners` in `hparams.py` from `korean_cleaners` to `english_cleaners` to train with English dataset**)
+3. Generate training dataset
 
-To train a single-speaker model:
+```
+python -m datasets.generate_data --metadata_path ./datasets/kss/alignment.json
+```
 
-    python3 train.py --data_path=datasets/son
-    python3 train.py --data_path=datasets/son --initialize_path=PATH_TO_CHECKPOINT
+4. Training
 
-To train a multi-speaker model:
+```
+python train.py --data_path=datasets/kss
+```
 
-    # after change `model_type` in `hparams.py` to `deepvoice` or `simple`
-    python3 train.py --data_path=datasets/son1,datasets/son2
+<br>
 
-To restart a training from previous experiments such as `logs/son-20171015`:
+<br>
 
-    python3 train.py --data_path=datasets/son --load_path logs/son-20171015
+<br>
 
-If you don't have good and enough (10+ hours) dataset, it would be better to use `--initialize_path` to use a well-trained model as initial parameters.
+## 4. Synthesize
 
+(Soon)
 
-### 4. Synthesize audio
+<br>
 
-You can train your own models with:
+<br>
 
-    python3 app.py --load_path logs/son-20171015 --num_speakers=1
+<br>
 
-or generate audio directly with:
+## 5. Manipulate Attention Module
 
-    python3 synthesizer.py --load_path logs/son-20171015 --text "이거 실화냐?"
-	
-### 4-1. Synthesizing non-korean(english) audio
+(Soon)
 
-For generating non-korean audio, you must set the argument --is_korean False.
-		
-	python3 app.py --load_path logs/LJSpeech_1_0-20180108 --num_speakers=1 --is_korean=False
-	python3 synthesizer.py --load_path logs/LJSpeech_1_0-20180108 --text="Winter is coming." --is_korean=False
+<br>
 
-## Results
+<br>
 
-Training attention on single speaker model:
+<br>
 
-![model](./assets/attention_single_speaker.gif)
+## 6. Check result
 
-Training attention on multi speaker model:
+(Soon)
 
-![model](./assets/attention_multi_speaker.gif)
+<br>
 
+<br>
 
-## Disclaimer
+<br>
 
-This is not an official [DEVSISTERS](http://devsisters.com/) product. This project is not responsible for misuse or for any damage that you may cause. You agree that you use this software at your own risk.
+## 7. Issues
 
+(Soon)
+
+<br>
+
+<br>
+
+<br>
 
 ## References
 
 - [Keith Ito](https://github.com/keithito)'s [tacotron](https://github.com/keithito/tacotron)
-- [DEVIEW 2017 presentation](https://www.slideshare.net/carpedm20/deview-2017-80824162)
+- [Carpedm's multispeaker-tacotron-tensorflow](https://github.com/carpedm20/multi-speaker-tacotron-tensorflow)
+- [Kyubyong Park's opened WEB datasets in Kaggle](https://www.kaggle.com/bryanpark/the-world-english-bible-speech-dataset)
+- [Kyubyong Park's opened Korean Single Speaker datasets in Kaggle](https://www.kaggle.com/bryanpark/korean-single-speaker-speech-dataset)
 
+<br>
 
 ## Author
 
-Taehoon Kim / [@carpedm20](http://carpedm20.github.io/)
+Hangbok Lee / [@hangpy](https://github.com/hangpy)

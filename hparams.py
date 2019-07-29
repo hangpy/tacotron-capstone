@@ -8,7 +8,8 @@ def f(num):
 basic_params = {
     # Comma-separated list of cleaners to run on text prior to training and eval. For non-English
     # text, you may want to use "basic_cleaners" or "transliteration_cleaners" See TRAINING_DATA.md.
-    'cleaners': 'english_cleaners', #originally korean_cleaners
+    # 'cleaners': 'korean_cleaners',
+    'cleaners': 'english_cleaners', #can be substitued
 }
 
 basic_params.update({
@@ -136,7 +137,8 @@ basic_params.update({
     'ignore_recognition_level': 0, # 0: use all, 1: ignore only unmatched_alignment, 2: fully ignore recognition
 
     # Eval
-    'min_tokens': 50,#originally 50, 30 is good for korean,
+    'min_tokens': 50, #originally 50, this is for english
+    # 'min_tokens': 30, # this is for korean
     'min_iters': 30,
     'max_iters': 200,
     'skip_inadequate': False,

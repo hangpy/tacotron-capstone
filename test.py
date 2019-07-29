@@ -2,6 +2,7 @@ import re
 import argparse
 
 def main():
+    '''
     parser = argparse.ArgumentParser()
 
     parser.add_argument('--data_paths', default='datasets/kr_example')
@@ -26,6 +27,13 @@ def main():
 
 
     print(new_target)
+    '''
+    a = "[saying]"
+    b = "saying"
+
+    audio_transcript = "so (the singers, heman, asaph, and ethan), [were appointed] with cymbals of brass to sound aloud;"
+    print(audio_transcript.replace("\"", "").replace("(", "").replace(")", "")\
+                .replace("[", "").replace("]", ""))
 
 if __name__ == '__main__':
     main()

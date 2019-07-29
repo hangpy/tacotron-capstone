@@ -49,10 +49,8 @@ def split_smaller_operation(target, version, len_silence):
         audio_chunks = split_on_silence(audio_file,
                                         # must be silent for at least half a second
                                         min_silence_len=len_silence,
-
                                         # consider it silent if quieter than -16 dBFS
                                         silence_thresh=-40, keep_silence=500)
-
 
         for i, chunk in tqdm(enumerate(audio_chunks, 1), desc='loading...'):
             out_file = os.path.join(target_dir, 'BN%02d_%05d.wav' % (version, index))
@@ -77,7 +75,6 @@ def split_smaller_operation(target, version, len_silence):
     # recursive! by presenting smaller length of base silence and next version to distinguish with original files
     split_smaller_operation(target, version+1, len_silence-100)
 
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--target', required=True, choices=['Test', 'Benedict'])
@@ -91,3 +88,6 @@ def main():
 
 if __name__ == '__main__':
     main()
+
+
+
