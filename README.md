@@ -6,8 +6,6 @@ The cloned project actually include multi-speaker model with deep-voice of Baidu
 
 <br>
 
-<br>
-
 ## 1. Construct virtual environment
 
 You must activate venv environment for running python library with tensorflow and so on.
@@ -21,8 +19,6 @@ source venv/Script/activate
 #mac
 source venv/bin/activate
 ```
-
-<br>
 
 <br>
 
@@ -44,8 +40,6 @@ basic_params.update({
     # 'min_tokens': 30, # this is for korean
 })
 ```
-
-<br>
 
 <br>
 
@@ -114,7 +108,7 @@ and `YOUR_DATASET/alignment.json` should look like:
 
 [Dataset Download Link](https://www.kaggle.com/bryanpark/the-world-english-bible-speech-dataset)
 
-The basically provided transcript has been minimally processed. So I had to manipulate original transcript's structure to can be trained by tacotron. First of all, provided transcript's quality is very good. so It was just all to change that transcript's form to normalized from and made it as alignment.josn which can be used to train with labeling.
+The basically provided transcript has been minimally processed. So I had to manipulate original transcript's structure to can be trained by tacotron. First of all, provided transcript's quality is quite good and total duration is as much as 72 hours! so It was just all to change that transcript's form to normalized from and made it as alignment.josn which can be used to train with labeling.
 
 So I changed a little bit, which audio file path and speech text will be split based on '\\t', and after removing not required symbol, normalized text with english_cleaner() in text utils.
 
@@ -173,13 +167,9 @@ python train.py --data_path=datasets/kss
 
 <br>
 
-<br>
-
 ## 4. Synthesize
 
 (Soon)
-
-<br>
 
 <br>
 
@@ -193,8 +183,6 @@ python train.py --data_path=datasets/kss
 
 <br>
 
-<br>
-
 ## 6. Check result
 
 (Soon)
@@ -203,13 +191,9 @@ python train.py --data_path=datasets/kss
 
 <br>
 
-<br>
-
 ## 7. Issues
 
 (Soon)
-
-<br>
 
 <br>
 
