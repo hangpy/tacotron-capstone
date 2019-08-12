@@ -1,5 +1,7 @@
 import re
 import argparse
+import matplotlib as mpl
+import os
 
 def main():
     '''
@@ -31,9 +33,21 @@ def main():
     a = "[saying]"
     b = "saying"
 
-    audio_transcript = "so (the singers, heman, asaph, and ethan), [were appointed] with cymbals of brass to sound aloud;"
-    print(audio_transcript.replace("\"", "").replace("(", "").replace(")", "")\
-                .replace("[", "").replace("]", ""))
+    #print('버전: ', mpl.__version__)
+    #print('설치 위치: ', mpl.__file__)
+    #print('설정 위치: ', mpl.get_configdir())
+    #print('캐시 위치: ', mpl.get_cachedir())
+    #fm = mpl.matplotlib_fname()
+    #print('설정 파일 위치: ', fm)
+    #font_list = fm.findSystemFonts(fontpaths=None, fontext='ttf')
+
+    # ttf 폰트 전체개수
+    #print(len(font_list))
+    #print([(f.name, f.fname) for f in fm.fontManager.ttflist if 'Nanum' in f.name])
+
+    print(os.path.join(os.path.abspath(''), "abcde"))
+
+
 
 if __name__ == '__main__':
     main()

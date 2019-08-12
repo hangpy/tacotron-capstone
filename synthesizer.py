@@ -417,7 +417,6 @@ if __name__ == "__main__":
             speaker_ids=[config.speaker_id],
             attention_trim=False,
             isKorean=config.is_korean,
-
             # Added parts
             manual_attention_mode=config.manual_attention_mode,
             # position the sample dir is stored

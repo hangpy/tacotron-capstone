@@ -169,7 +169,11 @@ python train.py --data_path=datasets/kss
 
 ## 4. Synthesize
 
-(Soon)
+At first, locating your position on project's root directory.
+
+```
+python synthesizer.py --load_path {location which has checkpoint file} --text "Text you want to synthesize"
+```
 
 <br>
 
@@ -177,7 +181,21 @@ python train.py --data_path=datasets/kss
 
 ## 5. Manipulate Attention Module
 
-(Soon)
+Let's suppose you want to make Benedict mimic to LJ.
+
+1. At first, you must generate LJ's voice with 0.npy, which stores LJ's attention module's weight output.
+
+```
+python synthesizer.py --load_path logs/{log_directory_what_you_genearted} --text "Text you want"
+```
+
+2. And then, you must synthesize Benedict's voice over LJ's attention output (0.npy)
+
+```
+python synthesizer.py --load_path logs/{log_directory_what_you_genearted} --text "Text you want" --manual_attention_mode=1
+```
+
+​	This `--manual_attention_mode=1` arg config part enable you to make Benedict mimic to LJ. The part you have to be cautious is that you must insert text which is same with previous text you generated.
 
 <br>
 
@@ -185,7 +203,9 @@ python train.py --data_path=datasets/kss
 
 ## 6. Check result
 
-(Soon)
+There are some samples that you can check how each speaker mimics others. In some sample text, the phenomenon that short speech is converted to longer speech successfully. Escpecially, check two sample audio in directory sample_2, benedict_2.wav and benedict_to_web_2.wav
+
+[Link to samples](https://drive.google.com/open?id=1Hn8qi4Rwz5AeENRZ41UilBgMwbLZm9Ak)
 
 <br>
 
@@ -193,7 +213,8 @@ python train.py --data_path=datasets/kss
 
 ## 7. Issues
 
-(Soon)
+1. In some specific text, when short speech is converted to relatively long speech, it generate wiered noise.
+2. The phenomenon that when long speech is converted to relatively shorter speech, some parts of audio get bleary
 
 <br>
 
